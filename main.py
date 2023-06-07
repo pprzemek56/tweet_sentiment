@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 
 from collections import defaultdict
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 from nltk.sentiment import SentimentIntensityAnalyzer
+
 
 # nltk.download('punkt') -> only for the first use
 # nltk.download('stopwords') -> only for the first use
@@ -62,11 +64,10 @@ def graph_visualization():
     plt.show()
 
 
-
-
 def analyze_tweets():
     stop_words = set(stopwords.words('english'))
     sentiment_analyzer = SentimentIntensityAnalyzer()
+    lemmatizer = WordNetLemmatizer()
     df = pd.read_csv('tweets_after.csv')
 
     results_dict = defaultdict(lambda: defaultdict(int))
@@ -81,6 +82,7 @@ def analyze_tweets():
         tweet = remove_punctuation(tweet)
         tokens = tokenize(tweet)
         tokens = remove_stopwords(tokens, stop_words)
+        tokens = lemmatize(tokens, lemmatizer)
 
         # analyze the sentiment
         result = sentiment(' '.join(tokens), sentiment_analyzer)['compound']
@@ -131,6 +133,11 @@ def tokenize(text):
 def remove_punctuation(text):
     translator = str.maketrans('', '', string.punctuation)
     return text.translate(translator)
+
+
+def lemmatize(tokens, lemmatizer):
+    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    return lemmatized_tokens
 
 
 if __name__ == "__main__":
