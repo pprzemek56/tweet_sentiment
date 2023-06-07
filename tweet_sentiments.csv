@@ -1,7 +1,7 @@
 name,sentiment,count
-Hillary Clinton,positive,1445
-Hillary Clinton,negative,856
-Hillary Clinton,neutral,925
-Donald Trump,positive,1742
+Hillary Clinton,positive,1462
+Hillary Clinton,negative,858
+Hillary Clinton,neutral,906
+Donald Trump,positive,1744
 Donald Trump,neutral,617
-Donald Trump,negative,859
+Donald Trump,negative,857

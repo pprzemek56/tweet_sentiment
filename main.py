@@ -3,20 +3,45 @@ import nltk
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
+import csv
+import threading
 
 from collections import defaultdict
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.sentiment import SentimentIntensityAnalyzer
+from wordcloud import WordCloud
 
 
 # nltk.download('punkt') -> only for the first use
 # nltk.download('stopwords') -> only for the first use
 # nltk.download('vader_lexicon') -> only for the first use
+# nltk.download('wordnet') -> only for the first use
 
 
 def main():
     graph_visualization()
+    generate_word_cloud()
+
+    plt.show()
+
+
+def generate_word_cloud():
+    df = pd.read_csv('all_words.csv')
+    all_words_string = ' '.join(df['word'].astype(str))  # convert column of words to a single string
+
+    wordcloud = WordCloud(width=800, height=800,
+                          background_color='white',
+                          stopwords=None,
+                          min_font_size=10).generate(all_words_string)
+
+    # plot the WordCloud image
+    plt.figure(figsize=(6, 6), facecolor=None)
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.tight_layout(pad=0)
+
+    plt.figure(2)
 
 
 def graph_visualization():
@@ -61,7 +86,7 @@ def graph_visualization():
     ax.set_xticklabels(groups)
     ax.legend()
 
-    plt.show()
+    plt.figure(1)
 
 
 def analyze_tweets():
@@ -70,6 +95,7 @@ def analyze_tweets():
     lemmatizer = WordNetLemmatizer()
     df = pd.read_csv('tweets_after.csv')
 
+    all_words = []  # list with all words necessary for map of words
     results_dict = defaultdict(lambda: defaultdict(int))
     for i, row in df.iterrows():
         name = row['handle']
@@ -83,6 +109,8 @@ def analyze_tweets():
         tokens = tokenize(tweet)
         tokens = remove_stopwords(tokens, stop_words)
         tokens = lemmatize(tokens, lemmatizer)
+
+        all_words.extend(tokens)
 
         # analyze the sentiment
         result = sentiment(' '.join(tokens), sentiment_analyzer)['compound']
@@ -102,6 +130,13 @@ def analyze_tweets():
                         for r, c in r.items()])
 
     df2.to_csv('tweet_sentiments.csv', index=False)
+
+    # Write all words to a new CSV file
+    with open('all_words.csv', 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["word"])  # write header
+        for word in all_words:
+            writer.writerow([word])  # write word
 
 
 def sentiment(text, sentiment_analyzer):
