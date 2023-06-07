@@ -4,7 +4,6 @@ import re
 import pandas as pd
 import matplotlib.pyplot as plt
 import csv
-import threading
 
 from collections import defaultdict
 from nltk.corpus import stopwords
